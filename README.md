@@ -26,7 +26,7 @@ Cette adaptation du vérificateur de mot de passe local en un vérificateur clie
 
 # Sources 
 
-J'ai utiliser les ressources suivantes pour le projet :
+J'utilise les ressources suivantes pour le projet :
 
 
 -> https://medium.com/swlh/lets-write-a-chat-app-in-python-f6783a9ac170
