@@ -1,6 +1,6 @@
 # Verificateur de mot de passe Client-Serveur
 
-Cette adaptation du vérificateur de mot de passe local en un vérificateur client serveur utilisant TCP, TLS et les logs est un projet personnel orienté **cybersécurité** et **réseau**, permettant de tester la robustesse d’un mot de passe, de le **hasher** et de le stocker de manière sécurisée en local.
+Cette adaptation du vérificateur de mot de passe local en un vérificateur client serveur utilisant TCP, TLS et les logs est un projet personnel orienté **cybersécurité** et **réseau**, permettant :
 
 ---
 
