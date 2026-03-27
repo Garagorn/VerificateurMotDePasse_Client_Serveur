@@ -15,7 +15,7 @@ Des premiers tests pour les deux requêtes (register et login) fonctionnent.
 2. Sécurisation de la communication avec TLS
 3. Mise  en place d'un système de log
 
-4? Tests dans un environnement local sous deux configurations :
+4. ? Tests dans un environnement local sous deux configurations :
 4.1. Client Serveur sur un réseau local commun
 4.2. Client Serveur sur deux machines sur un même réseau local
 4.3. Multiples clients et Serveur sur un même réseau
