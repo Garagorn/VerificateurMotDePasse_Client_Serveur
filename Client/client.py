@@ -7,7 +7,7 @@ PORT = 65432
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     
-    # Envoyer un message structuré
+    # Envoyer un message structure
     message = {
         "action": "register",
         "username": "aliceToto",
@@ -24,6 +24,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     }
     envoyer_message(s, message)
     
-    # Recevoir la réponse
+    # Recevoir la reponse
     response = recevoir_message(s)
     print(f"Reçu : {response}")
