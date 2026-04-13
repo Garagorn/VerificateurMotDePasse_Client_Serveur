@@ -1,0 +1,19 @@
+{"timestamp": "2026-04-13 00:00:50,093", "logger_name": "auth_server", "level": "INFO", "message": "D\u00e9marrage du serveur", "event": "server_start", "host": "127.0.0.1", "port": 65432}
+{"timestamp": "2026-04-13 00:00:50,093", "logger_name": "auth_server", "level": "INFO", "message": "Serveur en \u00e9coute", "event": "server_listening", "host": "127.0.0.1", "port": 65432}
+{"timestamp": "2026-04-13 00:00:52,188", "logger_name": "auth_server", "level": "INFO", "message": "Nouvelle connexion", "event": "client_connected", "client_ip": "127.0.0.1", "client_port": 56794}
+{"timestamp": "2026-04-13 00:01:16,357", "logger_name": "auth_server", "level": "INFO", "message": "Action re\u00e7ue", "event": "action_received", "action": "login", "username": "toto", "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:01:16,394", "logger_name": "auth_server", "level": "INFO", "message": "Tentative de connexion", "event": "login_attempt", "username": "toto", "success": true, "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:02:07,693", "logger_name": "auth_server", "level": "WARNING", "message": "Connexion fermee par ('127.0.0.1', 56794)"}
+{"timestamp": "2026-04-13 00:02:07,693", "logger_name": "auth_server", "level": "INFO", "message": "Client d\u00e9connect\u00e9", "event": "client_disconnected", "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:02:15,915", "logger_name": "auth_server", "level": "INFO", "message": "Demarrage du serveur", "event": "server_start", "host": "127.0.0.1", "port": 65432}
+{"timestamp": "2026-04-13 00:02:18,015", "logger_name": "auth_server", "level": "INFO", "message": "Nouvelle connexion", "event": "client_connected", "client_ip": "127.0.0.1", "client_port": 50622}
+{"timestamp": "2026-04-13 00:04:13,263", "logger_name": "auth_server", "level": "INFO", "message": "Action re\u00e7ue", "event": "action_received", "action": "register", "username": "Jean", "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:04:13,308", "logger_name": "auth_server", "level": "INFO", "message": "Tentative d'enregistrement", "event": "register_attempt", "username": "Jean", "success": true, "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:04:51,478", "logger_name": "auth_server", "level": "INFO", "message": "Action re\u00e7ue", "event": "action_received", "action": "register", "username": "Jean", "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:04:51,478", "logger_name": "auth_server", "level": "INFO", "message": "Tentative d'enregistrement", "event": "register_attempt", "username": "Jean", "success": false, "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:05:10,027", "logger_name": "auth_server", "level": "INFO", "message": "Action re\u00e7ue", "event": "action_received", "action": "login", "username": "Jean", "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:05:10,066", "logger_name": "auth_server", "level": "INFO", "message": "Tentative de connexion", "event": "login_attempt", "username": "Jean", "success": true, "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:05:18,614", "logger_name": "auth_server", "level": "INFO", "message": "Action re\u00e7ue", "event": "action_received", "action": "login", "username": "Jean", "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:05:18,654", "logger_name": "auth_server", "level": "INFO", "message": "Tentative de connexion", "event": "login_attempt", "username": "Jean", "success": false, "client_ip": "127.0.0.1"}
+{"timestamp": "2026-04-13 00:05:30,939", "logger_name": "auth_server", "level": "WARNING", "message": "Connexion fermee par ('127.0.0.1', 50622)"}
+{"timestamp": "2026-04-13 00:05:30,939", "logger_name": "auth_server", "level": "INFO", "message": "Client d\u00e9connect\u00e9", "event": "client_disconnected", "client_ip": "127.0.0.1"}

@@ -4,6 +4,27 @@ Cette adaptation du vérificateur de mot de passe local en un vérificateur clie
 
 ---
 
+## Avancée du projet
+
+Le projet est pour l'instat à un stade basique, les bases de la version locale ont été adaptée pour une version Client-Serveur basée sur TCP.
+Des premiers tests pour les deux requêtes (register et login) fonctionnent.
+
+### Suite
+
+1. Mise en place de l'interface cliente graphique en synchronisant TKinter et TCP en utilisant des threads.
+2. Sécurisation de la communication avec TLS
+3. Mise  en place d'un système de log
+
+4. ? Tests dans un environnement local sous deux configurations :
+
+4.1. Client Serveur sur un réseau local commun
+
+4.2. Client Serveur sur deux machines sur un même réseau local
+
+4.3. Multiples clients et Serveur sur un même réseau
+
+---
+
 # Aperçu du projet
 
 ---
