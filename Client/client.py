@@ -8,7 +8,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     
     # Envoyer un message structure
-    message = {
+    message1 = {
         "action": "register",
         "username": "aliceToto",
         "password": "MonMotDePasse123!",
@@ -17,12 +17,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         "naissance": "20/02/2002"
     }
 
-    message = {
+    message2 = {
         "action": "login",
         "username": "aliceToto",
         "password": "MonMotDePasse123!",
     }
-    envoyer_message(s, message)
+    envoyer_message(s, message1)
+    envoyer_message(s, message2)
     
     # Recevoir la reponse
     response = recevoir_message(s)

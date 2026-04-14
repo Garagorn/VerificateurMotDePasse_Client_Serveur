@@ -20,24 +20,33 @@ def handle_client(conn, addr):
         "client_port": addr[1]
     })
 
+    messages_recus = 0
     
     try:
         while True:
             message = recevoir_message(conn)
             if not message:
-                logger.warning(f"Connexion fermee par {addr}")
+                if messages_recus == 0:
+                    #Sonde de nettoyage
+                    logger.debug(f"Connexion fermee immediatement par {addr} (sonde ?)")
+                else:
+                    logger.info(f"Connexion fermee par {addr}")
                 break
             
+            messages_recus+=1
+
             action = message.get("action")
             username = message.get("username", "unknown")
             
-            logger.info("Action reçue", extra={
+            logger.info("Action recue", extra={
                 "event": "action_received",
                 "action": action,
                 "username": username,
                 "client_ip": addr[0]
             })
 
+
+        #Choix des actions Reponse/Log pour chaque cas
             if action == "register":
                 reponse = handle_register(message["username"], message["password"])
                 
@@ -58,6 +67,10 @@ def handle_client(conn, addr):
                     "client_ip": addr[0]
                 })
             
+            #Debug handshake
+            elif action == "hello":
+                reponse = {"status": "success", "message": "connected"}
+
             else:
                 reponse = {"status": "error", "message": "Action inconnue"}
             
@@ -69,12 +82,14 @@ def handle_client(conn, addr):
 
             envoyer_message(conn, reponse)
     
+    #Informations sur les erreurs
     except Exception as e:
         logger.error("Erreur de communication", extra={
             "event": "connection_error",
             "error": str(e),
             "client_ip": addr[0]
         }, exc_info=True)
+    #Deconnexion du client
     finally:
         conn.close()
         logger.info("Client deconnecte", extra={

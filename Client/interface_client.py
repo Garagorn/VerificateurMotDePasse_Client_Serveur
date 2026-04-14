@@ -1,3 +1,4 @@
+#Reutilisation des fonctions
 from Common.protocol import envoyer_message, recevoir_message
 from Serveur.Verificateur.server_score import (
     score_structure, analyser_date_naissance,
@@ -5,16 +6,20 @@ from Serveur.Verificateur.server_score import (
 )
 from Serveur.Verificateur.server_verif_dico import verification_dictionnaire
 
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 from threading import Thread
 from queue import Queue
 import socket
+import ssl
 
 SEUIL_VALIDE = 60   
 
 
-
+"""
+Calculer en local la force du mot de passe pour eviter d'evoyer au Serveur le mot de passe en clair
+"""
 def calculer_score(password: str, username: str,nom: str, prenom: str, naissance: str) -> tuple:
     if not password:
         return 0, []
@@ -52,29 +57,55 @@ def niveau_couleur(score: int) -> tuple:
 # Threads pour le reseau
 
 class NetworkThread(Thread):
-    """Thread dedie à la communication reseau"""
+    """Thread dedie a la communication reseau"""
 
-    def __init__(self, host: str, port: int,response_queue: Queue, command_queue: Queue):
+    def __init__(self, host: str, port: int,
+                response_queue: Queue, command_queue: Queue,
+                use_tls: bool = False):
         super().__init__()
         self.host           = host
         self.port           = port
         self.response_queue = response_queue
         self.command_queue  = command_queue
+        self.use_tls        = use_tls #Specifier l'utilisation de TLS
         self.sock           = None
         self.running        = True
         self.daemon         = True
 
+    #Mettre en place le contexte TLS pour le client
+    def _make_tls_context(self) -> ssl.SSLContext:
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        ctx.check_hostname = False
+        ctx.verify_mode    = ssl.CERT_NONE
+        return ctx
+
     def connect(self) -> bool:
         try:
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.connect((self.host, self.port))
+            raw_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            raw_sock.settimeout(5)
+            raw_sock.connect((self.host, self.port))
+        #Utilisation du contexte pour la communication
+            if self.use_tls:
+                ctx       = self._make_tls_context()
+                self.sock = ctx.wrap_socket(raw_sock, server_hostname=self.host)
+            else:
+                self.sock = raw_sock
+
             return True
         except Exception as e:
-            self.response_queue.put({"type": "error","message": f"Connexion echouee : {e}"})
+            #Ajouer la reponse dans la queue
+            self.response_queue.put({
+                "type": "error",
+                "message": f"Connexion echouee : {e}"
+            })
             return False
 
+    """
+    Envoyer les  donnees vers le serveur
+    """
     def _send(self, data: dict):
         try:
+                        #Socket et donnee
             envoyer_message(self.sock, data)
         except Exception as e:
             self.response_queue.put({"type": "error","message": f"Erreur d'envoi : {e}"})
@@ -86,12 +117,14 @@ class NetworkThread(Thread):
             except Exception:
                 continue
 
+        #Action suivant le type de commande
             if command["type"] == "stop":
                 break
 
             if command["type"] == "send":
                 self._send(command["data"])
                 response = recevoir_message(self.sock)
+            #Action suivant la reponse ou non du serveur
                 if response:
                     self.response_queue.put({"type": "response", "data": response})
                 else:
@@ -108,27 +141,42 @@ class ClientGUI:
 
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Authentification")
-        self.root.resizable(False, False)
+        self.root.title("Authentification") #Titre
+        self.root.resizable(False, False) #Ajuster la taille -> non
 
+    #Queue pour les reponses et communications
         self.response_queue: Queue = Queue()
         self.command_queue:  Queue = Queue()
 
-        self.network = NetworkThread("127.0.0.1", 65432,self.response_queue, self.command_queue)
+    #Son reseau de communication                                                              Utilisation de TLS
+        self.network = NetworkThread("127.0.0.1", 65432, self.response_queue, self.command_queue, use_tls=True)
 
+    #Probleme de connexion au serveur
         if not self.network.connect():
             messagebox.showerror("Erreur", "Impossible de se connecter au serveur")
             self.root.destroy()
             return
 
+    #Actions au lancement
         self.network.start()
+
+        #Test de connexion
+        self.command_queue.put({
+            "type": "send",
+            "data": {"action": "hello"}
+        })
+
+
         self._build_ui()
         self._check_responses()
-        self.root.protocol("WM_DELETE_WINDOW", self._on_quit)
 
+        self.root.protocol("WM_DELETE_WINDOW", self._on_quit) #Detruire la fenetre a la fermeture
 
+    """
+    Construction de l'interface graphique
+    """
     def _build_ui(self):
-        self.root.configure(bg="#f0f2f5")
+        self.root.configure(bg="#f0f2f5") #Couleur de bg
 
         # En-tête
         header = tk.Frame(self.root, bg="#2c3e50", pady=14)
@@ -150,13 +198,14 @@ class ClientGUI:
         self.notebook.add(tab_reg, text="Inscription  ")
         self.notebook.add(tab_log, text="Connexion  ")
 
+        #Construction du contenu des onglets
         self._build_tab_inscription(tab_reg)
         self._build_tab_connexion(tab_log)
 
         # Bouton Quitter
         quit_bar = tk.Frame(self.root, bg="#f0f2f5")
         quit_bar.pack(fill="x", padx=16, pady=(0, 14))
-        tk.Button(quit_bar, text="✖  Quitter",
+        tk.Button(quit_bar, text="Quitter",
                   command=self._on_quit,
                   bg="#e74c3c", fg="white",
                   font=("Segoe UI", 9, "bold"),
@@ -214,12 +263,12 @@ class ClientGUI:
         )
         self._issues_label.pack(anchor="w")
 
-        # Boutons
+    #Boutons pour l'onglet d'inscription
         btn_frame = tk.Frame(parent, bg="#f0f2f5")
         btn_frame.pack(pady=8)
 
         self._reg_submit_btn = tk.Button(
-            btn_frame, text="✔  S'inscrire",
+            btn_frame, text="S'inscrire",
             command=self._on_register,
             bg="#27ae60", fg="white",
             font=("Segoe UI", 9, "bold"),
@@ -236,7 +285,7 @@ class ClientGUI:
                   padx=14, pady=6
                   ).pack(side="left", padx=8)
 
-        # Mise à jour de la jauge à chaque frappe
+    # Mise a jour de la jauge a chaque frappe
         for key in ("password", "username", "nom", "prenom", "naissance"):
             self._reg_entries[key].bind("<KeyRelease>",lambda _e: self._update_strength())
 
@@ -259,6 +308,7 @@ class ClientGUI:
         btn_frame = tk.Frame(parent, bg="#f0f2f5")
         btn_frame.pack(pady=8)
 
+    #Boutons pour l'onglet de connexion
         tk.Button(btn_frame, text="Se connecter",
                   command=self._on_login,
                   bg="#2980b9", fg="white",
@@ -304,14 +354,17 @@ class ClientGUI:
             self._strength_bar.configure(style="red.Horizontal.TProgressbar")
 
         self._issues_label.config(
-            text=("⚠ Problèmes : " + " | ".join(issues)) if issues else ""
+            text=("Problèmes : " + " | ".join(issues)) if issues else ""
         )
         self._reg_submit_btn.config(
             state="normal" if score >= SEUIL_VALIDE else "disabled"
         )
 
-    # Actions
+# Actions
 
+    """
+    Enrigistrement d'une personne
+    """
     def _on_register(self):
         e = self._reg_entries
         username  = e["username"].get().strip()
@@ -326,6 +379,7 @@ class ClientGUI:
                                    "Nom d'utilisateur, mot de passe et confirmation sont obligatoires.")
             return
 
+    #Confirmation du mdp different du mdp
         if password != confirm:
             messagebox.showerror("Erreur", "Les deux mots de passe ne correspondent pas.")
             return
@@ -339,7 +393,7 @@ class ClientGUI:
                 (f"\nProblèmes : {', '.join(issues)}" if issues else "")
             )
             return
-
+    #Envoie des donnees pour l'enregristrement
         self.command_queue.put({
             "type": "send",
             "data": {
@@ -352,6 +406,9 @@ class ClientGUI:
             }
         })
 
+    """
+    Login d'une personne
+    """
     def _on_login(self):
         username = self._login_user.get().strip()
         password = self._login_pwd.get()
@@ -360,6 +417,7 @@ class ClientGUI:
             messagebox.showwarning("Champs manquants", "Remplissez tous les champs.")
             return
 
+    #Envoie de la requete de connexion
         self.command_queue.put({
             "type": "send",
             "data": {
@@ -368,6 +426,7 @@ class ClientGUI:
                 "password": password
             }
         })
+
 
     def _clear_inscription(self):
         for entry in self._reg_entries.values():
@@ -387,6 +446,7 @@ class ClientGUI:
             self._handle_response(self.response_queue.get())
         self.root.after(100, self._check_responses)
 
+
     def _handle_response(self, message: dict):
         msg_type = message.get("type")
 
@@ -398,14 +458,14 @@ class ClientGUI:
 
             if status == "success":
                 info = msg + (f"\n\nScore : {score}/100" if score is not None else "")
-                messagebox.showinfo("✔  Succès", info)
+                messagebox.showinfo("Succès", info)
                 active = self.notebook.index(self.notebook.select())
                 if active == 0:
                     self._clear_inscription()
                 else:
                     self._clear_connexion()
             else:
-                messagebox.showerror("✘  Erreur", msg)
+                messagebox.showerror("Erreur", msg)
 
         elif msg_type == "error":
             messagebox.showerror("Erreur reseau", message["message"])
@@ -422,5 +482,10 @@ class ClientGUI:
 
 
 if __name__ == "__main__":
-    app = ClientGUI()
-    app.run()
+    try:
+        app = ClientGUI()
+        app.run()
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        input("Appuie sur Entree pour quitter...")

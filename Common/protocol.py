@@ -1,5 +1,8 @@
 import json
 
+"""
+Essentiel pour l'envoi de message entre le client et le serveur
+"""
 def envoyer_message(sock, message_dict):
     """Envoie un dictionnaire Python en JSON"""
     message_json = json.dumps(message_dict)
@@ -12,8 +15,12 @@ def envoyer_message(sock, message_dict):
     # Puis le message
     sock.sendall(message_bytes)
 
+
+"""
+Essentiel pour receveoir des messages entre le client et le serveur
+"""
 def recevoir_message(sock):
-    """Reçoit un message JSON et retourne un dictionnaire"""
+    """Recoit un message JSON et retourne un dictionnaire"""
     # Recevoir la taille (4 bytes)
     length_bytes = sock.recv(4)
     if not length_bytes:

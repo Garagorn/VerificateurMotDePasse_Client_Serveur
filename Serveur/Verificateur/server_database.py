@@ -4,9 +4,13 @@ from Serveur.Verificateur.server_score import est_valide
 
 import os
 
+#Chemin absolu pour acceder a la bdd
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "database.db"))
 
+"""
+Ajout de mot de passe a la bdd
+"""
 def ajouterMDP(username, mdp,score_total):
     if not username or not mdp:
         return False, "Champs vides"
@@ -14,7 +18,7 @@ def ajouterMDP(username, mdp,score_total):
     if not est_valide(score_total):
         return False, "Mot de passe trop faible"
     try:
-        #Connection à la bdd
+        #Connection a la bdd
         conn = sql.connect(DB_PATH)
         cursor = conn.cursor()
 
@@ -30,16 +34,21 @@ def ajouterMDP(username, mdp,score_total):
         conn.commit()
         conn.close()
 
+#Résultats possibles pour l'ajout :
         return True, "Utilisateur ajouté"
 
     except sql.IntegrityError:
-        return False, "Nom d'utilisateur déjà existant"
+        return False, "Nom d'utilisateur déja existant"
 
+
+"""
+Vérification du mot de passe dans la bdd
+"""
 def verifierMDP(username, mdp):
     if not username or not mdp:
         return False, "Champs vides"
 
-    #Connection à la bdd
+    #Connection a la bdd
     try:
         conn = sql.connect(DB_PATH)
         cursor = conn.cursor()
@@ -52,19 +61,23 @@ def verifierMDP(username, mdp):
         result = cursor.fetchone()
         conn.close()
 
-        if result is None:
+    #Résultats possibles :
+        if result is None: #Pas d'user avec cet username
             return False, "Utilisateur introuvable"
 
         mdpBD = result[0] #mdp hashé depuis la base
 
-        if verifier(mdp, mdpBD):
+        if verifier(mdp, mdpBD): #Il existe un user avec le bon mdp
             return True, "Mot de passe correspondant"
-        else:
+        else:   #Mdp différent pour cet user
             return False, "Mot de passe incorrect"
 
     except Exception as e:
         return False, f"Erreur : {e}"
 
+"""
+Vérifier la présence d'un utilisateur dans la bdd
+"""
 def verifier_Utilisateur(username):
     if not username:
         return False, "Champ vide"
