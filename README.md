@@ -261,6 +261,25 @@ openssl req -new -x509 \
 - `connection_error` : ERROR : Erreur réseau
 - `server_shutdown` : INFO : Arrêt serveur
 
+### Exemples
+
+#### Enregistrement
+
+![Exemple de fonctionnement de l'application](docs/images/MDP_diff.png)
+
+![Erreur avec le pseudo utilisé](docs/images/NomUsed.png)
+
+#### Connexion
+
+![Erreur de mot de passe à la connexion](docs/images/Connexion_err_mdp.png)
+
+![Utilisateur déjà présent](docs/images/Connexion_err_user.png)
+
+![Connexion réussie](docs/images/Connexion_succes.png)
+
+
+![Fermeture du client et du serveur](docs/images/FermetureClient.png)
+
 ---
 
 ## Multi-Threading
