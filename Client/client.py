@@ -8,7 +8,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((HOST, PORT))
     
     # Envoyer un message structure
-    message1 = {
+    messag1e = {
         "action": "register",
         "username": "aliceToto",
         "password": "MonMotDePasse123!",

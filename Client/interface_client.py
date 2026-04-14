@@ -6,7 +6,6 @@ from Serveur.Verificateur.server_score import (
 )
 from Serveur.Verificateur.server_verif_dico import verification_dictionnaire
 
-
 import tkinter as tk
 from tkinter import ttk, messagebox
 from threading import Thread
@@ -427,7 +426,6 @@ class ClientGUI:
             }
         })
 
-
     def _clear_inscription(self):
         for entry in self._reg_entries.values():
             entry.delete(0, tk.END)
@@ -445,7 +443,6 @@ class ClientGUI:
         while not self.response_queue.empty():
             self._handle_response(self.response_queue.get())
         self.root.after(100, self._check_responses)
-
 
     def _handle_response(self, message: dict):
         msg_type = message.get("type")
